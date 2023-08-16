@@ -4,23 +4,24 @@ import './App.css';
 
 function App() {
   const [itemText, setItemText] = useState('');
+  const [itemAssignee, setItemAssignee] = useState('');
   const [listItems, setListItems] = useState([]);
-  const [isUpdating, setIsUpdating] = useState('');
-  const [updateItemText, setUpdateItemText] = useState('');
 
   //add new todo item to database
   const addItem = async (e) => {
     e.preventDefault();
+   
     try{
-      const res = await axios.post('http://localhost:5500/api/item', {item: itemText})
+      const res = await axios.post('http://localhost:5500/api/item', {item: e.target.item.value, assignee:e.target.assignee.value})
       setListItems(prev => [...prev, res.data]);
       setItemText('');
+      setItemAssignee('');
     }catch(err){
       console.log(err);
     }
   }
 
-  //Create function to fetch all todo items from database -- we will use useEffect hook
+  //Create function to fetch all todo items from database
   useEffect(()=>{
     const getItemsList = async () => {
       try{
@@ -45,53 +46,27 @@ function App() {
     }
   }
 
-  //Update item
-  const updateItem = async (e) => {
-    e.preventDefault()
-    try{
-      const res = await axios.put(`http://localhost:5500/api/item/${isUpdating}`, {item: updateItemText})
-      console.log(res.data)
-      const updatedItemIndex = listItems.findIndex(item => item._id === isUpdating);
-      const updatedItem = listItems[updatedItemIndex].item = updateItemText;
-      setUpdateItemText('');
-      setIsUpdating('');
-    }catch(err){
-      console.log(err);
-    }
-  }
-  //before updating item we need to show input field where we will create our updated item
-  const renderUpdateForm = () => (
-    <form className="update-form" onSubmit={(e)=>{updateItem(e)}} >
-      <input className="update-new-input" type="text" placeholder="New Item" onChange={e=>{setUpdateItemText(e.target.value)}} value={updateItemText} />
-      <button className="update-new-btn" type="submit">Update</button>
-    </form>
-  )
-
   return (
     <div className="App">
-      <h1>Todo List</h1>
+      <div className="todo-heading">Sprint Board</div>
       <form className="form" onSubmit={e => addItem(e)}>
-        <input type="text" placeholder='Add Todo Item' onChange={e => {setItemText(e.target.value)} } value={itemText} />
-        <button type="submit">Add</button>
+        <input type="text" id="item" name="item" placeholder='Enter Ticket Description' onChange={e => {setItemText(e.target.value)} } value={itemText} />
+        <input type="text" id="assignee" name="assignee" placeholder=' Enter Assignee' onChange={e => {setItemAssignee(e.target.value)} } value={itemAssignee} />
+        <button type="submit">Add To Board</button>
       </form>
       <div className="todo-listItems">
         {
           listItems.map(item => (
           <div className="todo-item">
-            {
-              isUpdating === item._id
-              ? renderUpdateForm()
-              : <>
+               <>
                   <p className="item-content">{item.item}</p>
-                  <button className="update-item" onClick={()=>{setIsUpdating(item._id)}}>Update</button>
+                  <span>Assignee: {item.assignee}</span>
                   <button className="delete-item" onClick={()=>{deleteItem(item._id)}}>Delete</button>
                 </>
-            }
           </div>
           ))
         }
         
-
       </div>
     </div>
   );
