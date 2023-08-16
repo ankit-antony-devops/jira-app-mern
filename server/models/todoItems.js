@@ -6,7 +6,11 @@ const TodoItemSchema = new mongoose.Schema({
   item:{
     type:String,
     required: true
-  }
+  },
+  assignee: {
+    type: String,
+    required: true,
+  },
 })
 
 //export this Schema
