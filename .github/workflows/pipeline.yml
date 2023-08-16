@@ -24,13 +24,13 @@ jobs:
         uses: actions/checkout@v2
 
       # Install dependencies and run tests for the client application
-      - name: Install and Test Client
+      - name: Install Client
         working-directory: ./client
         run: |
           npm install
           
       # Install dependencies, export environment variables to be used by application and run tests for the server application
-      - name: Install and Test Server
+      - name: Install Server
         working-directory: ./server
         run: |
           npm install
@@ -53,6 +53,13 @@ jobs:
           # Build image with tag rakeshpotnuru/productivity-app:server
         run: |
           docker build -t ankitantonytud/sprintboardrepo:server-${{github.run_number}} .
+      
+      # Build a Docker image for the NGINX reverse proxy
+      - name: Build NGINX Docker Image
+        working-directory: ./nginx
+        # Build image with tag rakeshpotnuru/productivity-app:nginx
+        run: |
+          docker build -t ankitantonytud/sprintboardrepo:nginx-${{github.run_number}} -t ankitantonytud/sprintboardrepo:nginx-latest .
 
       # Login to Docker Hub using credentials from repository secrets
       - name: Login to Docker Hub
@@ -66,6 +73,10 @@ jobs:
         run: |
           docker push ankitantonytud/sprintboardrepo:client-${{github.run_number}}
           docker push ankitantonytud/sprintboardrepo:server-${{github.run_number}}
+          docker push ankitantonytud/sprintboardrepo:nginx-${{github.run_number}}
+          docker push ankitantonytud/sprintboardrepo:client-latest
+          docker push ankitantonytud/sprintboardrepo:server-latest
+          docker push ankitantonytud/sprintboardrepo:nginx-latest
 
       # This is the step that is deploying the application to Elastic Beanstalk.
       - name: Deploy to Elastic Beanstalk
