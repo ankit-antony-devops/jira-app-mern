@@ -44,7 +44,7 @@ jobs:
         working-directory: ./client
         # Build image with tag rakeshpotnuru/productivity-app:client
         run: |
-          docker build -t ankitantonytud/sprintboardrepo:client-${{github.run_number}} .
+          docker build -t ankitantonytud/sprintboardrepo:client-${{github.run_number}} -t ankitantonytud/sprintboardrepo:client-latest .
 
       # Build a Docker image for the server application
       - name: Build Server Docker Image
@@ -52,7 +52,7 @@ jobs:
           ./server
           # Build image with tag rakeshpotnuru/productivity-app:server
         run: |
-          docker build -t ankitantonytud/sprintboardrepo:server-${{github.run_number}} .
+          docker build -t ankitantonytud/sprintboardrepo:server-${{github.run_number}} -t ankitantonytud/sprintboardrepo:server-latest .
       
       # Build a Docker image for the NGINX reverse proxy
       - name: Build NGINX Docker Image
