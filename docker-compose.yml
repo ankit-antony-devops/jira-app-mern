@@ -19,4 +19,4 @@ services:
   server:
     image: ankitantonytud/sprintboardrepo:server-latest
     environment:
-      - MONGODB_URI=${MONGODB_URI}
+      - DB_CONNECT=${DB_CONNECT}
