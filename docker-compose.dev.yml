@@ -10,10 +10,6 @@ services:
     # Mapping the port 3000 on the host machine to the port 3000 on the container.
     ports:
       - "3000:3000"
-    # Mapping the client directory on the host machine to the /app directory on the container.
-    # volumes:
-    #   - ./client:/app
-    #   - ./app/node_modules
     # Allows you to run container in detached mode.
     stdin_open: true
     tty: true
@@ -23,7 +19,3 @@ services:
     container_name: serverapp_c
     ports:
       - "5500:5500"
-    # volumes:
-    #   - ./server:/app
-    #   - ./app/node_modules
-    
