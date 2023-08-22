@@ -11,11 +11,14 @@ on:
 env:
   DB_CONNECT: ${{ secrets.DB_CONNECT }}
   PORT: ${{ secrets.PORT }}
+  TOKEN_KEY: ${{ secrets.TOKEN_KEY }}
+  EMAIL: ${{ secrets.EMAIL }}
+  PASSWORD: ${{ secrets.PASSWORD }}
 
 # This is the workflow that is being run.
 jobs:
   build-and-deploy:
-    # This is telling GitHub to run the workflow on the latest version of Ubuntu.
+    # This is telling GitHub to run the workflow on the latest version of Ubuntu
     runs-on: ubuntu-latest
     steps:
       # Checkout the code from the GitHub repository
@@ -27,6 +30,8 @@ jobs:
         working-directory: ./client
         run: |
           npm install
+          export REACT_APP_BACKEND_URL=$REACT_APP_BACKEND_URL
+          npm test
 
       # Install dependencies, export environment variables to be used by application and run tests for the server application
       - name: Install and Test Server
@@ -35,6 +40,9 @@ jobs:
           npm install
           export PORT=$PORT
           export DB_CONNECT=$DB_CONNECT
+          export TOKEN_KEY=$TOKEN_KEY
+          export EMAIL=$EMAIL
+          export PASSWORD=$PASSWORD
 
       # Build a Docker image for the client application
       - name: Build Client Docker Image
@@ -75,7 +83,7 @@ jobs:
           docker push anittajose/sprint-board:server-latest
           docker push anittajose/sprint-board:nginx-latest
 
-      # This is the step that is deploying the application to Elastic Beanstalk.
+      # This is the step that is used in deploying the applications to Elastic Beanstalk.
       - name: Deploy to Elastic Beanstalk
         uses: einaregilsson/beanstalk-deploy@v21
         with:

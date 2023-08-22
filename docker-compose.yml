@@ -14,9 +14,14 @@ services:
     image: anittajose/sprint-board:client-latest
     environment:
       - CHOKIDAR_USEPOLLING=true
+      - REACT_APP_BACKEND_URL=${REACT_APP_BACKEND_URL}
 
   server:
     image: anittajose/sprint-board:server-latest
     environment:
       - PORT=${PORT}
       - DB_CONNECT=${DB_CONNECT}
+      - TOKEN_KEY=${TOKEN_KEY}
+      - EMAIL=${EMAIL}
+      - PASSWORD=${PASSWORD}
+      

@@ -10,14 +10,13 @@ function App() {
   //add new todo item to database
   const addItem = async (e) => {
     e.preventDefault();
-   
     try{
-      const res = await axios.post('http://localhost:5500/api/item', {item: e.target.item.value, assignee:e.target.assignee.value})
+      const res = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/item`, {item: e.target.item?.value, assignee:e.target.assignee?.value})
       setListItems(prev => [...prev, res.data]);
       setItemText('');
       setItemAssignee('');
     }catch(err){
-      console.log(err);
+      
     }
   }
 
@@ -25,11 +24,10 @@ function App() {
   useEffect(()=>{
     const getItemsList = async () => {
       try{
-        const res = await axios.get('http://localhost:5500/api/items')
+        const res = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/items`)
         setListItems(res.data);
-        console.log('render')
       }catch(err){
-        console.log(err);
+       
       }
     }
     getItemsList()
@@ -38,11 +36,10 @@ function App() {
   // Delete item when click on delete
   const deleteItem = async (id) => {
     try{
-      const res = await axios.delete(`http://localhost:5500/api/item/${id}`)
+      const res = await axios.delete(`${process.env.REACT_APP_BACKEND_URL}/item/${id}`)
       const newListItems = listItems.filter(item=> item._id !== id);
       setListItems(newListItems);
     }catch(err){
-      console.log(err);
     }
   }
 

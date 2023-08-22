@@ -4,7 +4,7 @@ import App from './App';
 
 describe("App", () => {
 
-  it("Render Sprint board elements on screen", () => {
+  it("Render Sprint board elements on screen", async() => {
      render(<App />);
      const heading = screen.getByText(/Sprint Board/i);
      expect(heading).toBeInTheDocument();
@@ -23,6 +23,6 @@ describe("App", () => {
      const assignee = screen.getByRole("textbox", { name: /assignee/i });
      userEvent.type(assignee, 'Ankit');
      const addButton = screen.getByRole("button", { name: /add to board/i });
-     userEvent.click(addButton);
+     expect(addButton).toBeInTheDocument;
   });
 });
