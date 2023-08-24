@@ -1,5 +1,5 @@
 # The name of the workflow.
-name: Build and Deploy to AWS Elastic Beanstalk
+name: (Green) Build and Deploy to AWS Elastic Beanstalk
 
 # Run the workflow when code is pushed to the main branch
 on:
@@ -89,7 +89,7 @@ jobs:
         with:
           aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          application_name: ${{ secrets.EB_APP_NAME }}
+          application_name: ${{ secrets.EB_APP_NAME_GREEN }}
           environment_name: ${{ secrets.EB_ENV_NAME }}
           region: ${{ secrets.EB_REGION }}
           version_label: "version-${{ github.run_number }}"
