@@ -1,0 +1,95 @@
+# The name of the workflow.
+name: Build and Deploy to AWS Elastic Beanstalk
+
+# Run the workflow when code is pushed to the main branch
+on:
+  push:
+    branches: None
+
+# Set environment variables
+env:
+  DB_CONNECT: ${{ secrets.DB_CONNECT }}
+  PORT: ${{ secrets.PORT }}
+  TOKEN_KEY: ${{ secrets.TOKEN_KEY }}
+  EMAIL: ${{ secrets.EMAIL }}
+  PASSWORD: ${{ secrets.PASSWORD }}
+
+# This is the workflow that is being run.
+jobs:
+  build-and-deploy:
+    # This is telling GitHub to run the workflow on the latest version of Ubuntu
+    runs-on: ubuntu-latest
+    steps:
+      # Checkout the code from the GitHub repository
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Install dependencies and run tests for the client application
+      - name: Install Client and Run Test Cases
+        working-directory: ./client
+        run: |
+          npm install
+          export REACT_APP_BACKEND_URL=$REACT_APP_BACKEND_URL
+          npm test
+
+      # Install dependencies, export environment variables to be used by application and run tests for the server application
+      - name: Install Server
+        working-directory: ./server
+        run: |
+          npm install
+          export PORT=$PORT
+          export DB_CONNECT=$DB_CONNECT
+          export TOKEN_KEY=$TOKEN_KEY
+          export EMAIL=$EMAIL
+          export PASSWORD=$PASSWORD
+
+      # Build a Docker image for the client application
+      - name: Build Client Docker Image
+        working-directory: ./client
+        # Build image with tag rakeshpotnuru/productivity-app:client
+        run: |
+          docker build -t ankitantonytud/sprintboardrepo:client-${{github.run_number}} -t ankitantonytud/sprintboardrepo:client-latest .
+
+      # Build a Docker image for the server application
+      - name: Build Server Docker Image
+        working-directory:
+          ./server
+          # Build image with tag rakeshpotnuru/productivity-app:server
+        run: |
+          docker build -t ankitantonytud/sprintboardrepo:server-${{github.run_number}} -t ankitantonytud/sprintboardrepo:server-latest .
+
+      # Build a Docker image for the NGINX reverse proxy
+      - name: Build NGINX Docker Image
+        working-directory: ./nginx
+        # Build image with tag rakeshpotnuru/productivity-app:nginx
+        run: |
+          docker build -t ankitantonytud/sprintboardrepo:nginx-${{github.run_number}} -t ankitantonytud/sprintboardrepo:nginx-latest .
+
+      # Login to Docker Hub using credentials from repository secrets
+      - name: Login to Docker Hub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      # Push the Docker images to Docker Hub
+      - name: Push Docker Images to Docker Hub
+        run: |
+          docker push ankitantonytud/sprintboardrepo:client-${{github.run_number}}
+          docker push ankitantonytud/sprintboardrepo:server-${{github.run_number}}
+          docker push ankitantonytud/sprintboardrepo:nginx-${{github.run_number}}
+          docker push ankitantonytud/sprintboardrepo:client-latest
+          docker push ankitantonytud/sprintboardrepo:server-latest
+          docker push ankitantonytud/sprintboardrepo:nginx-latest
+
+      # This is the step that is used in deploying the applications to Elastic Beanstalk.
+      - name: Deploy to Elastic Beanstalk (Green)
+        uses: einaregilsson/beanstalk-deploy@v21
+        with:
+          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          application_name: ${{ secrets.EB_APP_NAME }}
+          environment_name: ${{ secrets.EB_ENV_NAME_GREEN }}
+          region: ${{ secrets.EB_REGION }}
+          version_label: "version-${{ github.run_number }}"
+          deployment_package: docker-compose.yml
