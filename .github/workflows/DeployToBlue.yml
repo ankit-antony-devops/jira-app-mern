@@ -1,5 +1,5 @@
 # The name of the workflow.
-name: Build and Deploy to AWS Elastic Beanstalk
+name: (Blue) Build and Deploy to AWS Elastic Beanstalk
 
 # Run the workflow when code is pushed to the main branch
 on:
@@ -83,13 +83,13 @@ jobs:
           docker push ankitantonytud/sprintboardrepo:nginx-latest
 
       # This is the step that is used in deploying the applications to Elastic Beanstalk.
-      - name: Deploy to Elastic Beanstalk (Green)
+      - name: Deploy to Elastic Beanstalk (Blue)
         uses: einaregilsson/beanstalk-deploy@v21
         with:
           aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           application_name: ${{ secrets.EB_APP_NAME }}
-          environment_name: ${{ secrets.EB_ENV_NAME_GREEN }}
+          environment_name: ${{ secrets.EB_ENV_NAME_BLUE }}
           region: ${{ secrets.EB_REGION }}
           version_label: "version-${{ github.run_number }}"
           deployment_package: docker-compose.yml
