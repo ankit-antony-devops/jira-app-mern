@@ -5,7 +5,8 @@ name: (Blue) Build and Deploy to AWS Elastic Beanstalk
 # Run the workflow when code is pushed to the main branch
 on:
   push:
-    branches: None
+    branches:
+    - main
 
 # Set environment variables
 env:
